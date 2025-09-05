@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flower Mound Weather Widget</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin:0; font-family: 'Segoe UI', Arial, sans-serif; }
+    .widget {
+      background: #222;
+      color: #fff;
+      border-radius: 12px;
+      padding: 24px 24px 16px 24px;
+      width: 350px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .location {
+      font-size: 1.1em;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .clouds {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1em;
+    }
+    .main-temp {
+      font-size: 2.8em;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .main-icon {
+      font-size: 2.2em;
+      margin-left: 10px;
+    }
+    .details {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .detail {
+      background: #333;
+      border-radius: 18px;
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1em;
+    }
+    .forecast {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 8px;
+    }
+    .forecast-item {
+      text-align: center;
+      width: 54px;
+    }
+    .forecast-time {
+      font-size: 0.95em;
+      margin-bottom: 2px;
+    }
+    .forecast-icon {
+      font-size: 1.3em;
+      margin-bottom: 2px;
+    }
+    .forecast-temp {
+      font-size: 1.1em;
+      font-weight: 500;
+    }
+    .arrow {
+      font-size: 1.3em;
+      color: #aaa;
+      cursor: pointer;
+      user-select: none;
+      padding: 0 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget" id="weather-widget">
+    <div class="header">
+      <div class="location">
+        <span>📍</span>
+        <span>Flower Mound</span>
+      </div>
+      <div class="clouds" id="main-condition">
+        <span id="main-condition-text">Clouds</span>
+        <span class="main-icon" id="main-condition-icon">☁️</span>
+      </div>
+    </div>
+    <div class="main-temp">
+      <span id="main-temp">--°F</span>
+    </div>
+    <div class="details">
+      <div class="detail">
+        <span>💧</span>
+        <span id="humidity">-- %</span>
+      </div>
+      <div class="detail">
+        <span>🌬️</span>
+        <span id="wind">-- mi/h</span>
+      </div>
+    </div>
+    <div class="forecast">
+  <span class="arrow" id="prev-arrow">&#8592;</span>
+  <div id="forecast-items" style="display:flex;gap:8px;overflow:hidden;width:300px;"></div>
+  <span class="arrow" id="next-arrow">&#8594;</span>
+    </div>
+  </div>
+  <script>
+    // Flower Mound, TX coordinates
+    const LAT = 33.0146;
+    const LON = -97.0969;
+
+    // Open-Meteo API for current and hourly forecast
+    const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,windspeed_10m,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto`;
+
+    // Weather code to icon and description mapping
+    const weatherMap = {
+      0: {icon: "☀️", text: "Clear"},
+      1: {icon: "🌤️", text: "Mainly Clear"},
+      2: {icon: "⛅", text: "Partly Cloudy"},
+      3: {icon: "☁️", text: "Clouds"},
+      45: {icon: "🌫️", text: "Fog"},
+      48: {icon: "🌫️", text: "Depositing Rime Fog"},
+      51: {icon: "🌦️", text: "Drizzle"},
+      53: {icon: "🌦️", text: "Drizzle"},
+      55: {icon: "🌦️", text: "Drizzle"},
+      56: {icon: "🌦️", text: "Freezing Drizzle"},
+      57: {icon: "🌦️", text: "Freezing Drizzle"},
+      61: {icon: "🌧️", text: "Rain"},
+      63: {icon: "🌧️", text: "Rain"},
+      65: {icon: "🌧️", text: "Rain"},
+      66: {icon: "🌧️", text: "Freezing Rain"},
+      67: {icon: "🌧️", text: "Freezing Rain"},
+      71: {icon: "🌨️", text: "Snow"},
+      73: {icon: "🌨️", text: "Snow"},
+      75: {icon: "🌨️", text: "Snow"},
+      77: {icon: "🌨️", text: "Snow Grains"},
+      80: {icon: "🌦️", text: "Rain Showers"},
+      81: {icon: "🌦️", text: "Rain Showers"},
+      82: {icon: "🌦️", text: "Rain Showers"},
+      85: {icon: "🌨️", text: "Snow Showers"},
+      86: {icon: "🌨️", text: "Snow Showers"},
+      95: {icon: "⛈️", text: "Thunderstorm"},
+      96: {icon: "⛈️", text: "Thunderstorm"},
+      99: {icon: "⛈️", text: "Thunderstorm"}
+    };
+
+    function getWeatherIcon(code) {
+      return weatherMap[code]?.icon || "☁️";
+    }
+    function getWeatherText(code) {
+      return weatherMap[code]?.text || "Clouds";
+    }
+
+    function formatHour(dtStr) {
+      const d = new Date(dtStr);
+      let h = d.getHours();
+      let ampm = h >= 12 ? 'pm' : 'am';
+      h = h % 12 || 12;
+      return `${h}:00 ${ampm}`;
+    }
+
+    // Carousel state
+    let forecastStart = 0;
+    const forecastDisplayCount = 6; // Show 6 hours at a time
+    let forecastItems = [];
+
+    function renderForecastCarousel() {
+      const container = document.getElementById('forecast-items');
+      container.innerHTML = '';
+      for (let i = forecastStart; i < Math.min(forecastStart + forecastDisplayCount, forecastItems.length); i++) {
+        const item = forecastItems[i];
+        const el = document.createElement('div');
+        el.className = 'forecast-item';
+        el.innerHTML = `
+          <div class="forecast-time">${item.time}</div>
+          <div class="forecast-icon">${item.icon}</div>
+          <div class="forecast-temp">${item.temp}°</div>
+        `;
+        container.appendChild(el);
+      }
+    }
+
+    // Fetch and render weather
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        // Current weather
+        const current = data.current_weather;
+        document.getElementById('main-temp').textContent = `${Math.round(current.temperature)}°F`;
+        document.getElementById('main-condition-text').textContent = getWeatherText(current.weathercode);
+        document.getElementById('main-condition-icon').textContent = getWeatherIcon(current.weathercode);
+
+        // Find current hour index
+        const times = data.hourly.time;
+        const now = new Date();
+        let idx = times.findIndex(t => {
+          let d = new Date(t);
+          return d.getHours() === now.getHours() && d.getDate() === now.getDate();
+        });
+        if (idx === -1) idx = 0;
+
+        // Humidity and wind
+        document.getElementById('humidity').textContent = `${data.hourly.relative_humidity_2m[idx]} %`;
+        document.getElementById('wind').textContent = `${Math.round(data.hourly.windspeed_10m[idx])} mi/h`;
+
+        // Prepare hourly forecast items (next 12 hours, every hour)
+        forecastItems = [];
+        for (let i = idx; i < Math.min(idx + 12, times.length); i++) {
+          forecastItems.push({
+            time: formatHour(times[i]),
+            temp: Math.round(data.hourly.temperature_2m[i]),
+            icon: getWeatherIcon(data.hourly.weathercode[i])
+          });
+        }
+        forecastStart = 0;
+        renderForecastCarousel();
+      })
+      .catch(() => {
+        document.getElementById('weather-widget').innerHTML = '<div style="color:#fff;text-align:center;">Unable to load weather data.</div>';
+      });
+
+    // Arrow button handlers
+    document.getElementById('prev-arrow').onclick = () => {
+      if (forecastStart > 0) {
+        forecastStart -= forecastDisplayCount;
+        if (forecastStart < 0) forecastStart = 0;
+        renderForecastCarousel();
+      }
+    };
+    document.getElementById('next-arrow').onclick = () => {
+      if (forecastStart + forecastDisplayCount < forecastItems.length) {
+        forecastStart += forecastDisplayCount;
+        renderForecastCarousel();
+      }
+    };
+  </script>
+</body>
+</html>
