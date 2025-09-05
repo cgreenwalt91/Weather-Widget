@@ -111,20 +111,21 @@
       min-width: 0;
     }
     .forecast-time {
-      font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+      font-size: clamp(0.8rem, 2vw, 1rem);
       margin-bottom: 0.2rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       line-height: 1.1;
+      font-weight: 500;
     }
     .forecast-icon {
-      font-size: clamp(0.8rem, 2vw, 1.1rem);
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
       margin-bottom: 0.1rem;
       line-height: 1;
     }
     .forecast-temp {
-      font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+      font-size: clamp(0.8rem, 2vw, 1rem);
       font-weight: 500;
       line-height: 1;
     }
@@ -220,9 +221,9 @@
     function formatHour(dtStr) {
       const d = new Date(dtStr);
       let h = d.getHours();
-      let ampm = h >= 12 ? 'pm' : 'am';
+      let ampm = h >= 12 ? 'p' : 'a';
       h = h % 12 || 12;
-      return `${h}:00 ${ampm}`;
+      return `${h}${ampm}`;
     }
 
     // Carousel state
