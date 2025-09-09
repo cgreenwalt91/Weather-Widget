@@ -35,7 +35,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.0rem;
       width: 100%;
     }
     .location {
@@ -61,6 +61,7 @@
       align-items: center;
       gap: 0.7rem;
       justify-content: center; /* <-- changed from flex-start to center */
+      line-height: 1;
     }
     .main-icon {
       font-size: clamp(1.8rem, 6vw, 2.5rem);
@@ -155,33 +156,35 @@
 </head>
 <body>
   <div class="widget" id="weather-widget">
-    <div class="header">
-      <div class="location">
-        <span class="material-symbols-outlined location-icon">location_on</span>
-        <span>Flower Mound</span>
+    <div> <!-- New wrapper div -->
+      <div class="header">
+        <div class="location">
+          <span class="material-symbols-outlined location-icon">location_on</span>
+          <span>Flower Mound</span>
+        </div>
+        <div class="clouds" id="main-condition">
+          <span id="main-condition-text">Clouds</span>
+          <span class="main-icon" id="main-condition-icon">☁️</span>
+        </div>
       </div>
-      <div class="clouds" id="main-condition">
-        <span id="main-condition-text">Clouds</span>
-        <span class="main-icon" id="main-condition-icon">☁️</span>
+      <div class="main-temp">
+        <span id="main-temp">--°F</span>
       </div>
-    </div>
-    <div class="main-temp">
-      <span id="main-temp">--°F</span>
-    </div>
-    <div class="details">
-      <div class="detail">
-        <span class="material-symbols-outlined humidity-icon">humidity_percentage</span>
-        <span id="humidity">-- %</span>
+      <div class="details">
+        <div class="detail">
+          <span class="material-symbols-outlined humidity-icon">humidity_percentage</span>
+          <span id="humidity">-- %</span>
+        </div>
+        <div class="detail">
+          <span class="material-symbols-outlined wind-icon">air</span>
+          <span id="wind">-- mi/h</span>
+        </div>
       </div>
-      <div class="detail">
-        <span class="material-symbols-outlined wind-icon">air</span>
-        <span id="wind">-- mi/h</span>
-      </div>
-    </div>
+    </div> <!-- End of new wrapper div -->
     <div class="forecast">
-  <span class="arrow" id="prev-arrow">&#8592;</span>
-  <div id="forecast-items"></div>
-  <span class="arrow" id="next-arrow">&#8594;</span>
+      <span class="arrow" id="prev-arrow">&#8592;</span>
+      <div id="forecast-items"></div>
+      <span class="arrow" id="next-arrow">&#8594;</span>
     </div>
   </div>
   <script>
