@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Flower Mound Weather Widget</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <style>
     * {
       box-sizing: border-box;
@@ -53,7 +54,7 @@
       flex-shrink: 0;
     }
     .main-temp {
-      font-size: clamp(4rem, 8vw, 20rem);
+      font-size: clamp(6rem, 8vw, 20rem);
       font-weight: 350;
       margin-bottom: 0.5rem;
       display: flex;
@@ -129,6 +130,18 @@
       font-weight: 500;
       line-height: 1;
     }
+    /* Icon Colors - Change these hex codes to customize */
+    .location-icon { color: #E57373; } /* Faint Red */
+    .humidity-icon { color: #64B5F6; } /* Faint Blue */
+    .wind-icon { color: #B0BEC5; }     /* Faint Gray */
+    .sun-icon { color: #FFD54F; }      /* Faint Yellow */
+    .cloud-icon { color: #B0BEC5; }    /* Faint Gray */
+    .fog-icon { color: #CFD8DC; }      /* Lighter Gray */
+    .rain-icon { color: #90A4AE; }     /* Bluish Gray */
+    .freezing-icon { color: #B3E5FC; } /* Light Blue */
+    .snow-icon { color: #E0E0E0; }     /* Light Gray */
+    .thunderstorm-icon { color: #FFD54F; } /* Faint Yellow */
+
     @media (max-width: 500px) {
       .widget {
         padding: 0.8rem;
@@ -144,7 +157,7 @@
   <div class="widget" id="weather-widget">
     <div class="header">
       <div class="location">
-        <span>📍</span>
+        <span class="material-symbols-outlined location-icon">location_on</span>
         <span>Flower Mound</span>
       </div>
       <div class="clouds" id="main-condition">
@@ -157,11 +170,11 @@
     </div>
     <div class="details">
       <div class="detail">
-        <span>💧</span>
+        <span class="material-symbols-outlined humidity-icon">humidity_percentage</span>
         <span id="humidity">-- %</span>
       </div>
       <div class="detail">
-        <span>🌬️</span>
+        <span class="material-symbols-outlined wind-icon">air</span>
         <span id="wind">-- mi/h</span>
       </div>
     </div>
@@ -181,38 +194,56 @@
 
     // Weather code to icon and description mapping
     const weatherMap = {
-      0: {icon: "☀️", text: "Clear"},
-      1: {icon: "🌤️", text: "Mainly Clear"},
-      2: {icon: "⛅", text: "Partly Cloudy"},
-      3: {icon: "☁️", text: "Clouds"},
-      45: {icon: "🌫️", text: "Fog"},
-      48: {icon: "🌫️", text: "Depositing Rime Fog"},
-      51: {icon: "🌦️", text: "Drizzle"},
-      53: {icon: "🌦️", text: "Drizzle"},
-      55: {icon: "🌦️", text: "Drizzle"},
-      56: {icon: "🌦️", text: "Freezing Drizzle"},
-      57: {icon: "🌦️", text: "Freezing Drizzle"},
-      61: {icon: "🌧️", text: "Rain"},
-      63: {icon: "🌧️", text: "Rain"},
-      65: {icon: "🌧️", text: "Rain"},
-      66: {icon: "🌧️", text: "Freezing Rain"},
-      67: {icon: "🌧️", text: "Freezing Rain"},
-      71: {icon: "🌨️", text: "Snow"},
-      73: {icon: "🌨️", text: "Snow"},
-      75: {icon: "🌨️", text: "Snow"},
-      77: {icon: "🌨️", text: "Snow Grains"},
-      80: {icon: "🌦️", text: "Rain Showers"},
-      81: {icon: "🌦️", text: "Rain Showers"},
-      82: {icon: "🌦️", text: "Rain Showers"},
-      85: {icon: "🌨️", text: "Snow Showers"},
-      86: {icon: "🌨️", text: "Snow Showers"},
-      95: {icon: "⛈️", text: "Thunderstorm"},
-      96: {icon: "⛈️", text: "Thunderstorm"},
-      99: {icon: "⛈️", text: "Thunderstorm"}
+      0: {icon: "light_mode", text: "Clear"},
+      1: {icon: "partly_cloudy_day", text: "Mainly Clear"},
+      2: {icon: "partly_cloudy_day", text: "Partly Cloudy"},
+      3: {icon: "cloud", text: "Clouds"},
+      45: {icon: "foggy", text: "Fog"},
+      48: {icon: "foggy", text: "Depositing Rime Fog"},
+      51: {icon: "rainy_light", text: "Drizzle"},
+      53: {icon: "rainy", text: "Drizzle"},
+      55: {icon: "rainy", text: "Drizzle"},
+      56: {icon: "ac_unit", text: "Freezing Drizzle"},
+      57: {icon: "ac_unit", text: "Freezing Drizzle"},
+      61: {icon: "rainy", text: "Rain"},
+      63: {icon: "rainy", text: "Rain"},
+      65: {icon: "rainy_heavy", text: "Rain"},
+      66: {icon: "ac_unit", text: "Freezing Rain"},
+      67: {icon: "ac_unit", text: "Freezing Rain"},
+      71: {icon: "cloudy_snowing", text: "Snow"},
+      73: {icon: "cloudy_snowing", text: "Snow"},
+      75: {icon: "cloudy_snowing", text: "Snow"},
+      77: {icon: "grain", text: "Snow Grains"},
+      80: {icon: "rainy_light", text: "Rain Showers"},
+      81: {icon: "rainy", text: "Rain Showers"},
+      82: {icon: "rainy_heavy", text: "Rain Showers"},
+      85: {icon: "cloudy_snowing", text: "Snow Showers"},
+      86: {icon: "cloudy_snowing", text: "Snow Showers"},
+      95: {icon: "thunderstorm", text: "Thunderstorm"},
+      96: {icon: "thunderstorm", text: "Thunderstorm"},
+      99: {icon: "thunderstorm", text: "Thunderstorm"}
     };
 
     function getWeatherIcon(code) {
-      return weatherMap[code]?.icon || "☁️";
+      const iconName = weatherMap[code]?.icon || "cloud";
+      
+      const iconClassMap = {
+        "light_mode": "sun-icon",
+        "partly_cloudy_day": "sun-icon",
+        "cloud": "cloud-icon",
+        "foggy": "fog-icon",
+        "rainy_light": "rain-icon",
+        "rainy": "rain-icon",
+        "rainy_heavy": "rain-icon",
+        "ac_unit": "freezing-icon",
+        "cloudy_snowing": "snow-icon",
+        "grain": "snow-icon",
+        "thunderstorm": "thunderstorm-icon"
+      };
+
+      const extraClass = iconClassMap[iconName] || 'cloud-icon';
+      
+      return `<span class="material-symbols-outlined ${extraClass}">${iconName}</span>`;
     }
     function getWeatherText(code) {
       return weatherMap[code]?.text || "Clouds";
@@ -265,7 +296,7 @@
         const current = data.current_weather;
         document.getElementById('main-temp').textContent = `${Math.round(current.temperature)}°F`;
         document.getElementById('main-condition-text').textContent = getWeatherText(current.weathercode);
-        document.getElementById('main-condition-icon').textContent = getWeatherIcon(current.weathercode);
+        document.getElementById('main-condition-icon').innerHTML = getWeatherIcon(current.weathercode);
 
         // Find current hour index
         const times = data.hourly.time;
